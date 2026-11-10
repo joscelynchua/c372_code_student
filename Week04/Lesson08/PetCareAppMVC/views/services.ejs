@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book a Service - Pet Care</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <%- include('partials/navbar') %>
+
+  <main class="container mt-5">
+    <h1 class="mb-4">Book a Pet-care Service</h1>
+
+    <% if (messages.length > 0) { %>
+      <% messages.forEach((message) => { %>
+        <div class="alert alert-success" role="alert"><%= message %></div>
+      <% }); %>
+    <% } %>
+    <% if (errors.length > 0) { %>
+      <% errors.forEach((error) => { %>
+        <div class="alert alert-danger" role="alert"><%= error %></div>
+      <% }); %>
+    <% } %>
+
+    <% if (pets.length === 0) { %>
+      <div class="alert alert-info" role="status">
+        Add a pet before booking a service.
+        <a href="/pets/new" class="alert-link">Add a pet</a>
+      </div>
+    <% } %>
+    <% if (services.length === 0) { %>
+      <div class="alert alert-info" role="status">No services are currently available.</div>
+    <% } %>
+
+    <% if (pets.length > 0 && services.length > 0) { %>
+      <form action="/services/book" method="POST" class="card card-body">
+        <div class="mb-3">
+          <label for="petId" class="form-label">Pet</label>
+          <select id="petId" name="petId" class="form-select" required>
+            <option value="">Choose a pet</option>
+            <% pets.forEach((pet) => { %>
+              <option value="<%= pet.id %>" <%= String(pet.id) === selectedPetId ? 'selected' : '' %>>
+                <%= pet.name %> (<%= pet.species %>)
+              </option>
+            <% }); %>
+          </select>
+        </div>
+
+        <fieldset class="mb-3">
+          <legend class="fs-6">Service</legend>
+          <% services.forEach((service) => { %>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="serviceId"
+                id="service-<%= service.id %>"
+                value="<%= service.id %>"
+                required>
+              <label class="form-check-label" for="service-<%= service.id %>">
+                <%= service.name %> - S$<%= Number(service.price).toFixed(2) %>
+              </label>
+            </div>
+          <% }); %>
+        </fieldset>
+
+        <div class="mb-3">
+          <label for="bookingDate" class="form-label">Booking date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="bookingDate"
+            name="bookingDate"
+            min="<%= today %>"
+            value="<%= today %>"
+            required>
+        </div>
+
+        <p class="text-muted">Booking and payment will remain pending. No payment is processed.</p>
+        <div>
+          <button type="submit" class="btn btn-primary">Create Booking</button>
+          <a href="/bookings" class="btn btn-outline-secondary">Booking History</a>
+        </div>
+      </form>
+    <% } %>
+  </main>
+</body>
+</html>
